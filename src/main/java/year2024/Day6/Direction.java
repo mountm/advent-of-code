@@ -14,7 +14,7 @@ public enum Direction {
         this.iStep = iStep;
         this.jStep = jStep;
     }
-    static Direction getDirectionByToken(char token) {
+    public static Direction getDirectionByToken(char token) {
         return EnumSet.allOf(Direction.class).stream().filter(e -> e.getToken() == (token)).findAny().orElse(null);
     }
     public char getToken() {

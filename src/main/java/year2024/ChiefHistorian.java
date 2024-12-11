@@ -5,14 +5,12 @@ import base.AoCYear;
 import year2024.Day1.Day1Runner;
 import year2024.Day2.Day2Runner;
 import year2024.Day3.Day3Runner;
-import year2024.Day4.Day4Runner;
 import year2024.Day5.Day5Runner;
-import year2024.Day6.GuardGallivant;
 
 public class ChiefHistorian extends AoCYear {
     AoCDay AOC_DAYS[] = {
-            new Day1Runner(), new Day2Runner(), new Day3Runner(), new Day4Runner(),
-            new Day5Runner(), new GuardGallivant(), new BridgeRepair(), new ResonantCollinearity(),
+            new Day1Runner(), new Day2Runner(), new Day3Runner(), new Day5Runner(), new PrintQueue(),
+            new GuardGallivant(), new BridgeRepair(), new ResonantCollinearity(),
             new DiskFragmenter(), new HoofIt(), new PlutonianPebbles()
     };
 

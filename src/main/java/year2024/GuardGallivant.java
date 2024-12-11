@@ -1,6 +1,7 @@
-package year2024.Day6;
+package year2024;
 
 import base.AoCDay;
+import year2024.Day6.Direction;
 
 import java.time.Instant;
 import java.util.EnumSet;
