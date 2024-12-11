@@ -1,4 +1,4 @@
-package year2024.Day5;
+package year2024;
 
 import base.AoCDay;
 
@@ -14,7 +14,6 @@ public class CeresSearch extends AoCDay {
     public void solve() {
         timeMarkers[0] = Instant.now().toEpochMilli();
         char[][] puzzle = convertToCharGrid(readResourceFile(2024, 4, false, 0));
-
         timeMarkers[1] = Instant.now().toEpochMilli();
         part1Answer = solvePart1(puzzle);
         timeMarkers[2] = Instant.now().toEpochMilli();
