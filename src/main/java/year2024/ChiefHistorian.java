@@ -10,13 +10,12 @@ import year2024.Day5.Day5Runner;
 import year2024.Day6.Day6Runner;
 import year2024.Day7.Day7Runner;
 import year2024.Day8.Day8Runner;
-import year2024.Day9.Day9Runner;
 
 public class ChiefHistorian extends AoCYear {
     AoCDay AOC_DAYS[] = {
             new Day1Runner(), new Day2Runner(), new Day3Runner(), new Day4Runner(),
             new Day5Runner(), new Day6Runner(), new Day7Runner(), new Day8Runner(),
-            new Day9Runner(), new HoofIt(), new PlutonianPebbles()
+            new DiskFragmenter(), new HoofIt(), new PlutonianPebbles()
     };
 
     public ChiefHistorian(int year) {
