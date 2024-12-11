@@ -50,7 +50,7 @@ public class ResonantCollinearity extends AoCDay {
                             Pair.of(list.get(j).getLeft() - vertStep, list.get(j).getRight() - horzStep)
                     );
                     for (Pair<Integer, Integer> possiblePoint: possiblePoints) {
-                        if (!possiblePoint.equals(list.get(i)) && !possiblePoint.equals(list.get(j)) && isValidPoint(possiblePoint, puzzleSize)) {
+                        if (!possiblePoint.equals(list.get(i)) && !possiblePoint.equals(list.get(j)) && isSafeCoord(possiblePoint.getLeft(), possiblePoint.getRight(), puzzleSize)) {
                             hasAntiNode[possiblePoint.getLeft()][possiblePoint.getRight()] = true;
                         }
                     }
@@ -72,22 +72,22 @@ public class ResonantCollinearity extends AoCDay {
                     int vertStep = list.get(j).getLeft() - list.get(i).getLeft();
                     int horzStep = list.get(j).getRight() - list.get(i).getRight();
                     Pair<Integer, Integer> newPoint = Pair.of(list.get(i).getLeft() + vertStep, list.get(i).getRight() + horzStep);
-                    while(isValidPoint(newPoint, puzzleSize)) {
+                    while(isSafeCoord(newPoint.getLeft(), newPoint.getRight(), puzzleSize)) {
                         hasAntiNode[newPoint.getLeft()][newPoint.getRight()] = true;
                         newPoint = Pair.of(newPoint.getLeft() + vertStep, newPoint.getRight() + horzStep);
                     }
                     newPoint = Pair.of(list.get(i).getLeft() - vertStep, list.get(i).getRight() - horzStep);
-                    while(isValidPoint(newPoint, puzzleSize)) {
+                    while(isSafeCoord(newPoint.getLeft(), newPoint.getRight(), puzzleSize)) {
                         hasAntiNode[newPoint.getLeft()][newPoint.getRight()] = true;
                         newPoint = Pair.of(newPoint.getLeft() - vertStep, newPoint.getRight() - horzStep);
                     }
                     newPoint = Pair.of(list.get(j).getLeft() + vertStep, list.get(j).getRight() + horzStep);
-                    while(isValidPoint(newPoint, puzzleSize)) {
+                    while(isSafeCoord(newPoint.getLeft(), newPoint.getRight(), puzzleSize)) {
                         hasAntiNode[newPoint.getLeft()][newPoint.getRight()] = true;
                         newPoint = Pair.of(newPoint.getLeft() + vertStep, newPoint.getRight() + horzStep);
                     }
                     newPoint = Pair.of(list.get(j).getLeft() - vertStep, list.get(j).getRight() - horzStep);
-                    while(isValidPoint(newPoint, puzzleSize)) {
+                    while(isSafeCoord(newPoint.getLeft(), newPoint.getRight(), puzzleSize)) {
                         hasAntiNode[newPoint.getLeft()][newPoint.getRight()] = true;
                         newPoint = Pair.of(newPoint.getLeft() - vertStep, newPoint.getRight() - horzStep);
                     }

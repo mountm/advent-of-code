@@ -165,4 +165,8 @@ public class AoCDay {
         }
         return result;
     }
+
+    public boolean isSafeCoord(int i, int j, int size) {
+        return (i >= 0 && i < size && j >= 0 && j < size);
+    }
 }
