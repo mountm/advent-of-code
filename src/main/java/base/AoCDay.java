@@ -157,4 +157,12 @@ public class AoCDay {
     public List<String> convertStringToList(String input) {
         return Arrays.stream(input.split("")).collect(Collectors.toList());
     }
+
+    public <T> List<List<T>> copyNestedList(List<List<T>> inputList) {
+        List<List<T>> result = new ArrayList<>();
+        for (List<T> list : inputList) {
+            result.add(new ArrayList<>(list));
+        }
+        return result;
+    }
 }
