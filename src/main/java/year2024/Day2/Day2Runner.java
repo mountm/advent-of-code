@@ -1,4 +1,6 @@
-package Day2;
+package year2024.Day2;
+
+import base.AoCDay;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,7 +12,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class Day2Runner {
+public class Day2Runner extends AoCDay {
 
     public static void main(String[] args) {
         BufferedReader input = null;

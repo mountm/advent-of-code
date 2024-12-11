@@ -1,4 +1,6 @@
-package Day3;
+package year2024.Day3;
+
+import base.AoCDay;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -6,7 +8,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Day3Runner {
+public class Day3Runner extends AoCDay {
 
     public static void main(String[] args) {
         BufferedReader input = null;

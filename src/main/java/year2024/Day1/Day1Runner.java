@@ -1,4 +1,6 @@
-package Day1;
+package year2024.Day1;
+
+import base.AoCDay;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -8,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Day1Runner {
+public class Day1Runner extends AoCDay {
 
     public static void main(String[] args) {
         List<Integer> list1 = new ArrayList<>();

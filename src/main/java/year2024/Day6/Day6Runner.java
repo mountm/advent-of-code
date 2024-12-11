@@ -1,4 +1,6 @@
-package Day6;
+package year2024.Day6;
+
+import base.AoCDay;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -7,7 +9,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Day6Runner {
+public class Day6Runner extends AoCDay {
     private static final int PUZZLE_SIZE = 130;
     static Map<Direction, boolean[][]> visitedInDirection = new HashMap<>();
     public static void main(String[] args) {

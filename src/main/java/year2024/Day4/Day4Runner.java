@@ -1,4 +1,6 @@
-package Day4;
+package year2024.Day4;
+
+import base.AoCDay;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -7,7 +9,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class Day4Runner {
+public class Day4Runner extends AoCDay {
     static Map<Integer, Set<Integer>> rules = new HashMap<>();
     static List<List<Integer>> updates = new ArrayList<>();
     public static void main(String[] args) {

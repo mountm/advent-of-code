@@ -1,4 +1,4 @@
-package Day6;
+package year2024.Day6;
 
 import java.util.EnumSet;
 

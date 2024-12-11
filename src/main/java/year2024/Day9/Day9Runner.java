@@ -1,4 +1,6 @@
-package Day9;
+package year2024.Day9;
+
+import base.AoCDay;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -6,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Day9Runner {
+public class Day9Runner extends AoCDay {
     public static List<Long> longList = new ArrayList<>();
     public static void main(String[] args) {
         BufferedReader input = null;

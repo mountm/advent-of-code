@@ -1,11 +1,13 @@
-package Day5;
+package year2024.Day5;
+
+import base.AoCDay;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Set;
 
-public class Day5Runner {
+public class Day5Runner extends AoCDay {
     static Set<Character> mustHave = Set.of('S', 'M');
     public static void main(String[] args) {
         BufferedReader input = null;

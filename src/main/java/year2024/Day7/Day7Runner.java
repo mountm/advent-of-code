@@ -1,4 +1,6 @@
-package Day7;
+package year2024.Day7;
+
+import base.AoCDay;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -8,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Day7Runner {
+public class Day7Runner extends AoCDay {
     public static List<List<Long>> equations = new ArrayList<>();
     public static void main(String[] args) {
         BufferedReader input = null;

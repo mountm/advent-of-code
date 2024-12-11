@@ -1,5 +1,6 @@
-package Day8;
+package year2024.Day8;
 
+import base.AoCDay;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.BufferedReader;
@@ -10,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Day8Runner {
+public class Day8Runner extends AoCDay {
     private static final Map<Character, List<Pair<Integer, Integer>>> antennas = new HashMap<>();
     private static final int PUZZLE_SIZE = 50;
     private static final boolean[][] hasAntiNode = new boolean[PUZZLE_SIZE][PUZZLE_SIZE];
