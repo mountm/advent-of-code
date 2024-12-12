@@ -5,13 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class AoCDay {
 
@@ -154,8 +151,8 @@ public class AoCDay {
     }
 
 
-    public List<String> convertStringToList(String input) {
-        return Arrays.stream(input.split("")).collect(Collectors.toList());
+    public List<String> convertStringToList(String input, String regex) {
+        return Arrays.stream(input.split(regex)).collect(Collectors.toList());
     }
 
     public <T> List<List<T>> copyNestedList(List<List<T>> inputList) {

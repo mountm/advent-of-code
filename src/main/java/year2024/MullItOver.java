@@ -34,7 +34,6 @@ public class MullItOver extends AoCDay {
                 } else if (matcher.group().equals("do()")) {
                     doMult = true;
                 } else if (doMult) {
-                    System.out.println(matcher.group().substring(4, matcher.group().length() - 1));
                     String[] nums = matcher.group().substring(4, matcher.group().length() - 1).split(",");
                     total += Integer.parseInt(nums[0], 10) * Integer.parseInt(nums[1], 10);
                 }
