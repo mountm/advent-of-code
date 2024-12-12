@@ -8,7 +8,7 @@ public class ChiefHistorian extends AoCYear {
     AoCDay AOC_DAYS[] = {
             new Day1Runner(), new RedNosedReports(), new MullItOver(), new CeresSearch(), new PrintQueue(),
             new GuardGallivant(), new BridgeRepair(), new ResonantCollinearity(),
-            new DiskFragmenter(), new HoofIt(), new PlutonianPebbles()
+            new DiskFragmenter(), new HoofIt(), new PlutonianPebbles(), new GardenGroups()
     };
 
     public ChiefHistorian(int year) {
