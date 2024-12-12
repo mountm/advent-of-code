@@ -52,11 +52,10 @@ public class GardenGroups extends AoCDay {
                 }
             }
         }
-        return addSides(foundAbove, false) + addSides(foundBelow, false) + addSides(foundLeft, true) + addSides(foundRight, true);
-
+        return countSides(foundAbove, false) + countSides(foundBelow, false) + countSides(foundLeft, true) + countSides(foundRight, true);
     }
 
-    private Integer addSides(boolean[][] grid, boolean countVert) {
+    private Integer countSides(boolean[][] grid, boolean countVert) {
         int count = 0;
         boolean foundFence = false;
         for (int i = 0; i < grid.length; i++) {
