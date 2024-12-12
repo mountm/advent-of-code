@@ -1,4 +1,4 @@
-package year2024.Day3;
+package year2024;
 
 import base.AoCDay;
 
