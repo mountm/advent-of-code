@@ -79,7 +79,7 @@ public class GuardGallivant extends AoCDay {
         return false;
     }
 
-    private static boolean[][] traceRoute(char[][] puzzle, boolean[][] visited, int i, int j, Direction direction) {
+    private static void traceRoute(char[][] puzzle, boolean[][] visited, int i, int j, Direction direction) {
         while (i >= 0 && i < puzzle.length && j >= 0 && j < puzzle[i].length) {
             if (puzzle[i][j] == '#') {
                 i -= direction.getiStep();
@@ -91,6 +91,5 @@ public class GuardGallivant extends AoCDay {
                 j += direction.getjStep();
             }
         }
-        return visited;
     }
 }

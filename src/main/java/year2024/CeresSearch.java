@@ -2,11 +2,7 @@ package year2024;
 
 import base.AoCDay;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.time.Instant;
-import java.util.List;
 import java.util.Set;
 
 public class CeresSearch extends AoCDay {
@@ -38,15 +34,14 @@ public class CeresSearch extends AoCDay {
     }
 
     private int solvePart2(char[][] puzzle) {
-        return countMatches(puzzle, "A");
+        return countMatches(puzzle);
     }
 
-    private int countMatches(char[][] puzzle, String pattern) {
+    private int countMatches(char[][] puzzle) {
         int count = 0;
-        char firstChar = pattern.charAt(0);
         for (int i = 1; i < puzzle.length - 1; i++) {
             for (int j = 1; j < puzzle[i].length - 1; j++) {
-                if (puzzle[i][j] == firstChar) {
+                if (puzzle[i][j] == 'A') {
                     count += countMatchesStartingFromPosition(puzzle, i, j);
                 }
             }

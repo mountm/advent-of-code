@@ -60,10 +60,6 @@ public class ResonantCollinearity extends AoCDay {
         return countAntiNodes(hasAntiNode);
     }
 
-    private boolean isValidPoint(Pair<Integer, Integer> possiblePoint, int puzzleSize) {
-        return possiblePoint.getLeft() >= 0 && possiblePoint.getLeft() < puzzleSize && possiblePoint.getRight() >= 0 && possiblePoint.getRight() < puzzleSize;
-    }
-
     private int findMoreAntiNodes(Map<Character, List<Pair<Integer, Integer>>> antennas, int puzzleSize) {
         boolean[][] hasAntiNode = new boolean[puzzleSize][puzzleSize];
         for (List<Pair<Integer, Integer>> list : antennas.values()) {

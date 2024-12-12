@@ -16,12 +16,16 @@ public class AoCYear {
                 "Day #", "Puzzle name", "Parsing Time","Part 1 Time(ms)", "Part 2 Time(ms)",
                 "Part 1 Answer", "Part 2 Answer");
 
-        for (int i = 1; i <= 25; i++) {
+        for (int i = 1; i <= getNumDays(); i++) {
             runOneDay(i, false);
             getSummary(i);
         }
         long diffTime = Instant.now().toEpochMilli() - startTime;
         System.out.println("Time to run all programs: " + diffTime + " ms.");
+    }
+
+    public int getNumDays() {
+        return 25;
     }
 
 

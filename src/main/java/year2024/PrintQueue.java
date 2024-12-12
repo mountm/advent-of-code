@@ -2,12 +2,8 @@ package year2024;
 
 import base.AoCDay;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class PrintQueue extends AoCDay {
