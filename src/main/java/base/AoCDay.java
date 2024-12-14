@@ -138,9 +138,9 @@ public class AoCDay {
         System.out.println(sb);
     }
 
-    protected void printGrid(Character[][] grid) {
+    protected void printGrid(char[][] grid) {
         StringBuffer sb = new StringBuffer("\n");
-        for (Character[] characters : grid) {
+        for (char[] characters : grid) {
             for (int j = 0; j < grid[0].length; j++) {
                 sb.append(characters[j]);
             }
