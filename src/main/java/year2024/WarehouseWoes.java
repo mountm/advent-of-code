@@ -31,7 +31,7 @@ public class WarehouseWoes extends AoCDay {
     private long solvePartOne(char[][] grid, List<Direction> moves) {
         Pair<Integer, Integer> startLoc = findCharInGrid(grid, '@');
         attemptAllMoves(grid, moves, startLoc.getLeft(), startLoc.getRight(), false);
-        return countLocations(grid, '0');
+        return countLocations(grid, 'O');
     }
 
     private long countLocations(char[][] grid, char match) {
@@ -61,8 +61,8 @@ public class WarehouseWoes extends AoCDay {
 
     private boolean attemptDoubleWidthMove(Direction move, char[][] grid, int iPos, int jPos) {
         List<Pair<Integer, Integer>> coordsRequiringUpdates = checkDoubleWidthObstacles(move, grid, iPos, jPos);
-        for (Pair<Integer, Integer> coord : coordsRequiringUpdates) {
-            executeMove(move, grid, coord.getLeft(), coord.getRight());
+        for (int k = coordsRequiringUpdates.size() - 1; k >= 0; k--) {
+            executeMove(move, grid, coordsRequiringUpdates.get(k).getLeft(), coordsRequiringUpdates.get(k).getRight());
         }
         return !coordsRequiringUpdates.isEmpty();
     }
@@ -76,7 +76,7 @@ public class WarehouseWoes extends AoCDay {
         boolean checkNextRow = true;
         while (checkNextRow) {
             Set<Pair<Integer, Integer>> nextRowSet = new HashSet<>();
-            for (Pair<Integer, Integer> coord : checking.get(0)) {
+            for (Pair<Integer, Integer> coord : checking.get(checking.size() - 1)) {
                 char nextCell = grid[coord.getLeft() + move.getiStep()][coord.getRight()];
                 if (nextCell == '[') {
                     nextRowSet.add(Pair.of(coord.getLeft() + move.getiStep(), coord.getRight()));
@@ -95,7 +95,7 @@ public class WarehouseWoes extends AoCDay {
             if (nextRowSet.isEmpty()) {
                 checkNextRow = false;
             } else {
-                checking.add(0, nextRowSet);
+                checking.add(nextRowSet);
             }
         }
         return checking.stream().flatMap(Collection::stream).collect(Collectors.toList());
