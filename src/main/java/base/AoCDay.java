@@ -1,5 +1,7 @@
 package base;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -95,6 +97,17 @@ public class AoCDay {
             i++;
         }
         return grid;
+    }
+
+    protected Pair<Integer, Integer> findCharInGrid(char[][] grid, char element) {
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == element) {
+                    return Pair.of(i, j);
+                }
+            }
+        }
+        return Pair.of(-1, -1);
     }
 
     protected char[][] rotateCharGridClockwise(char[][] grid) {

@@ -35,4 +35,8 @@ public enum Direction {
             default -> null;
         };
     }
+
+    public boolean isHorizontal() {
+        return iStep == 0;
+    }
 }
