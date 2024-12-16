@@ -1,8 +1,8 @@
 package year2024;
 
 import base.AoCDay;
+import base.AocUtils.Direction;
 import org.apache.commons.lang3.tuple.Pair;
-import year2024.Day6.Direction;
 
 import java.time.Instant;
 import java.util.*;

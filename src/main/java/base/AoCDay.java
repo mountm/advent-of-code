@@ -164,11 +164,11 @@ public class AoCDay {
     }
 
 
-    public List<String> convertStringToList(String input, String regex) {
+    protected List<String> convertStringToList(String input, String regex) {
         return Arrays.stream(input.split(regex)).collect(Collectors.toList());
     }
 
-    public <T> List<List<T>> copyNestedList(List<List<T>> inputList) {
+    protected <T> List<List<T>> copyNestedList(List<List<T>> inputList) {
         List<List<T>> result = new ArrayList<>();
         for (List<T> list : inputList) {
             result.add(new ArrayList<>(list));
@@ -176,7 +176,11 @@ public class AoCDay {
         return result;
     }
 
-    public boolean isSafeCoord(int i, int j, int size) {
+    protected boolean isSafeCoord(int i, int j, int size) {
         return (i >= 0 && i < size && j >= 0 && j < size);
+    }
+
+    protected int getManhattanDistance(Pair<Integer, Integer> point1, Pair<Integer, Integer> point2) {
+        return Math.abs(point1.getLeft() - point2.getLeft()) + Math.abs(point1.getRight() - point2.getRight());
     }
 }

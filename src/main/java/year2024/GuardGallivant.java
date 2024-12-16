@@ -1,7 +1,7 @@
 package year2024;
 
 import base.AoCDay;
-import year2024.Day6.Direction;
+import base.AocUtils.Direction;
 
 import java.time.Instant;
 import java.util.EnumSet;
@@ -70,7 +70,7 @@ public class GuardGallivant extends AoCDay {
             if (puzzle[i][j] == '#') {
                 i -= direction.getiStep();
                 j -= direction.getjStep();
-                direction = direction.getNextDirection();
+                direction = direction.getNextClockwiseDirection();
             } else {
                 i += direction.getiStep();
                 j += direction.getjStep();
@@ -84,7 +84,7 @@ public class GuardGallivant extends AoCDay {
             if (puzzle[i][j] == '#') {
                 i -= direction.getiStep();
                 j -= direction.getjStep();
-                direction = direction.getNextDirection();
+                direction = direction.getNextClockwiseDirection();
             } else {
                 visited[i][j] = true;
                 i += direction.getiStep();
