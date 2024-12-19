@@ -1,7 +1,6 @@
 package year2024;
 
 import base.AoCDay;
-import base.AocUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.Instant;
