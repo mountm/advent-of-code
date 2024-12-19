@@ -1,46 +1,60 @@
 package year2024;
 
 import base.AoCDay;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.Instant;
 import java.util.*;
 
 public class LinenLayout extends AoCDay {
+
     
     public void solve() {
         timeMarkers[0] = Instant.now().toEpochMilli();
         List<String> lines = readResourceFile(2024, 19, false, 0);
-        List<String> availablePatterns = List.of(lines.get(0).split(", "));
+        Set<String> availablePatterns = Set.of(lines.get(0).split(", "));
         Set<String> wantedDesigns = new HashSet<>(lines.subList(2, lines.size()));
+         Pair<Set<String>, Map<String, Long>> searchOutput = getPossibleDesigns(availablePatterns, wantedDesigns);
         timeMarkers[1] = Instant.now().toEpochMilli();
-        Set<String> validDesigns = getPossibleDesigns(availablePatterns, wantedDesigns);
-        part1Answer = validDesigns.size();
+        part1Answer = searchOutput.getLeft().size();
         timeMarkers[2] = Instant.now().toEpochMilli();
+        part2Answer = countWaysToReach(searchOutput.getLeft(), searchOutput.getRight());
         timeMarkers[3] = Instant.now().toEpochMilli();
     }
 
-    private Set<String> getPossibleDesigns(List<String> availablePatterns, Set<String> wantedDesigns) {
+
+    private long countWaysToReach(Set<String> designs, Map<String, Long> waysToReach) {
+        return designs.stream().map(waysToReach::get).reduce(Long::sum).orElse(-1L);
+    }
+
+    private Pair<Set<String>, Map<String, Long>> getPossibleDesigns(Set<String> availablePatterns, Set<String> wantedDesigns) {
         Set<String> validDesigns = new HashSet<>();
-        Deque<String> frontier = new LinkedList<>();
+        Map<String, Long> waysToReach = new HashMap<>();
+        waysToReach.put("", 1L);
+        PriorityQueue<String> frontier = new PriorityQueue<>();
         frontier.add("");
         Set<String> reached = new HashSet<>();
         reached.add("");
 
         while (!frontier.isEmpty()) {
-            String current = frontier.pollFirst();
-            if (wantedDesigns.remove(current)) {
+            String current = frontier.poll();
+            if (wantedDesigns.contains(current)) {
                 validDesigns.add(current);
             }
-            if (wantedDesigns.isEmpty()) break;
             if (wantedDesigns.stream().noneMatch(e -> e.startsWith(current))) continue;
             for (String pattern : availablePatterns) {
-                if (!reached.contains(current + pattern)) {
-                    frontier.addLast(current + pattern);
-                    reached.add(current + pattern);
+                String testPattern = current + pattern;
+                if (wantedDesigns.stream().noneMatch(e -> e.startsWith(testPattern))) continue;
+                if (!reached.contains(testPattern)) {
+                    frontier.add(testPattern);
+                    reached.add(testPattern);
+                    waysToReach.put(testPattern, waysToReach.get(current));
+                } else {
+                    waysToReach.merge(testPattern, waysToReach.get(current), Long::sum);
                 }
             }
         }
-        return validDesigns;
+        return Pair.of(validDesigns, waysToReach);
     }
 
 }
