@@ -14,12 +14,51 @@ public class ReindeerMaze extends AoCDay {
         char[][] grid = convertToCharGrid(readResourceFile(2024, 16, false, 0));
         Pair<Integer, Integer> startPos = findCharInGrid(grid, 'S');
         Pair<Integer, Integer> endPos = findCharInGrid(grid, 'E');
-        Pair<Map<CellWithDirection, Integer>, Map<CellWithDirection, Set<CellWithDirection>>> dijkstraOutput = dijkstraWithDirections(grid, new CellWithDirection(startPos, Direction.RIGHT), endPos);
+        Pair<Map<CellWithDirection, Integer>, Map<CellWithDirection, Set<CellWithDirection>>> searchOutput = searchWithDirections(grid, new CellWithDirection(startPos, Direction.RIGHT), endPos);
         timeMarkers[1] = Instant.now().toEpochMilli();
-        part1Answer = findShortestPath(dijkstraOutput, endPos);
+        part1Answer = findShortestPath(searchOutput, endPos);
         timeMarkers[2] = Instant.now().toEpochMilli();
-        part2Answer = solvePart2((int) part1Answer, dijkstraOutput, endPos);
+        part2Answer = solvePart2((int) part1Answer, searchOutput, endPos);
         timeMarkers[3] = Instant.now().toEpochMilli();
+    }
+
+    private Pair<Map<CellWithDirection, Integer>, Map<CellWithDirection, Set<CellWithDirection>>> searchWithDirections(char[][] grid, CellWithDirection startPos, Pair<Integer, Integer> endPos) {
+        Map<CellWithDirection, Set<CellWithDirection>> prevNodes = new HashMap<>();
+        Map<CellWithDirection, Integer> nodeCosts = new HashMap<>();
+        prevNodes.put(startPos, Set.of());
+        nodeCosts.put(startPos, 0);
+        PriorityQueue<CellWithDirection> frontier = new PriorityQueue<>(Comparator.comparingInt(o -> nodeCosts.get(o) + getManhattanDistance(o.getPosition(), endPos)));
+        frontier.add(startPos);
+        while (!frontier.isEmpty()) {
+            CellWithDirection current = frontier.poll();
+            if (current.getPosition().equals(endPos)) continue;
+            for (CellWithDirection next : getNeighbors(current, grid)) {
+                int costStep = next.getPosition().equals(current.getPosition()) ? 1000 : 1;
+                int newCost = nodeCosts.get(current) + costStep;
+                if (!nodeCosts.containsKey(next) || nodeCosts.get(next) > newCost) {
+                    nodeCosts.put(next, newCost);
+                    frontier.add(next);
+                    Set<CellWithDirection> entry = new HashSet<>();
+                    entry.add(current);
+                    prevNodes.put(next, entry);
+                } else if (nodeCosts.containsKey(next) && nodeCosts.get(next) == newCost) {
+                    prevNodes.get(next).add(current);
+                }
+            }
+        }
+        return Pair.of(nodeCosts, prevNodes);
+    }
+
+    private Set<CellWithDirection> getNeighbors(CellWithDirection current, char[][] grid) {
+        Set<CellWithDirection> output = new HashSet<>();
+        Direction newDirection = current.getDirection().getNextClockwiseDirection();
+        output.add(new CellWithDirection(current.getPosition(), newDirection));
+        output.add(new CellWithDirection(current.getPosition(), newDirection.getOppositeDirection()));
+        Pair<Integer, Integer> newLoc = current.getPositionInFront();
+        if (grid[newLoc.getLeft()][newLoc.getRight()] != '#') {
+            output.add(new CellWithDirection(newLoc, current.getDirection()));
+        }
+        return output;
     }
 
     private int findShortestPath(Pair<Map<CellWithDirection, Integer>, Map<CellWithDirection, Set<CellWithDirection>>> dijkstraOutput, Pair<Integer, Integer> endPos) {
@@ -41,62 +80,5 @@ public class ReindeerMaze extends AoCDay {
             cellsToCheck.addAll(map.getOrDefault(nextCell, Set.of()));
         }
         return cellLocations.size();
-    }
-
-    private Pair<Map<CellWithDirection, Integer>, Map<CellWithDirection, Set<CellWithDirection>>> dijkstraWithDirections(char[][] grid, CellWithDirection startPos, Pair<Integer, Integer> endPos) {
-        Map<CellWithDirection, Integer> finalizedNodes = new HashMap<>();
-        Map<CellWithDirection, Integer> nodeDistances = new HashMap<>();
-        Map<CellWithDirection, Set<CellWithDirection>> prevNodes = new HashMap<>();
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length; j++) {
-                if (i == startPos.getiCoord() && j == startPos.getjCoord()) {
-                    nodeDistances.put(startPos, 0);
-                    for (Direction dir : EnumSet.allOf(Direction.class)) {
-                        if (!dir.equals(startPos.getDirection())) {
-                            nodeDistances.put(new CellWithDirection(startPos.getPosition(), dir), Integer.MAX_VALUE);
-                        }
-                    }
-                } else if (grid[i][j] != '#'){
-                    for (Direction dir : EnumSet.allOf(Direction.class)) {
-                        nodeDistances.put(new CellWithDirection(i, j, dir), Integer.MAX_VALUE);
-                    }
-                }
-            }
-        }
-        int solCost = Integer.MAX_VALUE;
-        while(!nodeDistances.isEmpty()) {
-            Map.Entry<CellWithDirection, Integer> currentEntry = nodeDistances.entrySet().stream().min(Map.Entry.comparingByValue()).orElseThrow();
-            if (currentEntry.getValue() > solCost) break;
-            if (currentEntry.getKey().getPosition().equals(endPos)) {
-                solCost = currentEntry.getValue();
-            }
-            CellWithDirection currentCell = currentEntry.getKey();
-            nodeDistances.entrySet().stream().filter(e -> isNeighbor(currentCell, e.getKey())).forEach(nextEntry -> {
-                int newDistance = currentEntry.getValue() + calculateDistance(currentCell, nextEntry.getKey());
-                if (newDistance == nextEntry.getValue()) {
-                    // equally valid path
-                    prevNodes.get(nextEntry.getKey()).add(currentCell);
-                }
-                if (newDistance < nextEntry.getValue()) {
-                    nextEntry.setValue(newDistance);
-                    Set<CellWithDirection> prevNodeEntry = new HashSet<>();
-                    prevNodeEntry.add(currentCell);
-                    prevNodes.put(nextEntry.getKey(), prevNodeEntry);
-                }
-            });
-            finalizedNodes.put(currentEntry.getKey(), nodeDistances.remove(currentEntry.getKey()));
-        }
-        return Pair.of(finalizedNodes, prevNodes);
-    }
-
-    private boolean isNeighbor(CellWithDirection current, CellWithDirection next) {
-        if (getManhattanDistance(current.getPosition(), next.getPosition()) == 1) {
-            return (current.getiCoord() + current.getDirection().getiStep() == next.getiCoord() && current.getjCoord() + current.getDirection().getjStep() == next.getjCoord() && current.getDirection().equals(next.getDirection()));
-        }
-        return (current.getPosition().equals(next.getPosition()) && !current.equals(next) && !current.getDirection().getOppositeDirection().equals(next.getDirection()));
-    }
-
-    private int calculateDistance(CellWithDirection current, CellWithDirection next) {
-        return (current.getPosition().equals(next.getPosition())) ? 1000 : 1;
     }
 }

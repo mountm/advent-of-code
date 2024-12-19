@@ -29,6 +29,10 @@ public class AocUtils {
             return Pair.of(iCoord, jCoord);
         }
 
+        public Pair<Integer, Integer> getPositionInFront() {
+            return Pair.of(iCoord + direction.getiStep(), jCoord + direction.getjStep());
+        }
+
         public void setPosition(Pair<Integer, Integer> position) {
             this.iCoord = position.getLeft();
             this.jCoord = position.getRight();

@@ -37,7 +37,9 @@ public class AoCDay {
         String className = getClass().getName();
         String[] splitNames = className.split("\\.");
         String name = splitNames[splitNames.length-1];
-        System.out.printf("%4d |%25s |%20d |%20d |%20d |%20d |%20d |%n",i,name,timeMarkers[1]-timeMarkers[0],timeMarkers[2]-timeMarkers[1],timeMarkers[3]-timeMarkers[2], part1Answer, part2Answer);
+        String pt1FormatStr = part1Answer instanceof String ? "%20s" : "%20d";
+        String pt2FormatStr = part2Answer instanceof String ? "%20s" : "%20d";
+        System.out.printf("%4d |%25s |%20d |%20d |%20d |"+pt1FormatStr + " |"+pt2FormatStr+" |%n",i,name,timeMarkers[1]-timeMarkers[0],timeMarkers[2]-timeMarkers[1],timeMarkers[3]-timeMarkers[2], part1Answer, part2Answer);
     }
 
     public InputStream getFileFromResourceStream(Integer year, Integer day, boolean test, Integer testSuffix) {
@@ -182,5 +184,9 @@ public class AoCDay {
 
     protected int getManhattanDistance(Pair<Integer, Integer> point1, Pair<Integer, Integer> point2) {
         return Math.abs(point1.getLeft() - point2.getLeft()) + Math.abs(point1.getRight() - point2.getRight());
+    }
+
+    protected Pair<Integer, Integer> moveInDirection(Pair<Integer, Integer> startPos, AocUtils.Direction direction) {
+        return Pair.of(startPos.getLeft() + direction.getiStep(), startPos.getRight() + direction.getjStep());
     }
 }
