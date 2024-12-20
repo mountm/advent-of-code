@@ -7,9 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.FileSystems;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.sql.Array;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AoCDay {
@@ -188,5 +187,45 @@ public class AoCDay {
 
     protected Pair<Integer, Integer> moveInDirection(Pair<Integer, Integer> startPos, AocUtils.Direction direction) {
         return Pair.of(startPos.getLeft() + direction.getiStep(), startPos.getRight() + direction.getjStep());
+    }
+
+    protected Pair<Integer, Map<Pair<Integer, Integer>, Pair<Integer, Integer>>> aStarSearch(char[][] grid, Pair<Integer, Integer> startPos, Pair<Integer, Integer> endPos) {
+        Map<Pair<Integer, Integer>, Integer> nodeCosts = new HashMap<>();
+        nodeCosts.put(startPos, 0);
+        PriorityQueue<Pair<Integer, Integer>> frontier = new PriorityQueue<>(Comparator.comparingInt(o -> nodeCosts.get(o) + getManhattanDistance(o, endPos)));
+        frontier.add(startPos);
+        Map<Pair<Integer, Integer>, Pair<Integer, Integer>> prevNode = new HashMap<>();
+
+        while (!frontier.isEmpty()) {
+            Pair<Integer, Integer> current = frontier.poll();
+
+            if (current.equals(endPos)) return Pair.of(nodeCosts.get(current), prevNode);
+            for (Pair<Integer, Integer> next : getNeighbors(current, grid)) {
+                int newCost = nodeCosts.get(current) + 1;
+                if (!nodeCosts.containsKey(next) || newCost < nodeCosts.get(next)) {
+                    nodeCosts.put(next, newCost);
+                    frontier.add(next);
+                    prevNode.put(next, current);
+                }
+            }
+        }
+        return Pair.of(-1, Map.of());
+    }
+
+    protected Set<Pair<Integer, Integer>> getNeighbors(Pair<Integer, Integer> current, char[][] grid) {
+        return EnumSet.allOf(AocUtils.Direction.class).stream().map(d -> moveInDirection(current, d)).filter(point -> isSafeCoord(point.getLeft(), point.getRight(), grid.length) && grid[point.getLeft()][point.getRight()] != '#').collect(Collectors.toSet());
+    }
+
+    protected List<Pair<Integer, Integer>> getCellLocations(Map<Pair<Integer, Integer>, Pair<Integer, Integer>> map, Pair<Integer, Integer> endingCell) {
+        List<Pair<Integer, Integer>> cellLocations = new LinkedList<>();
+        cellLocations.add(endingCell);
+        Queue<Pair<Integer, Integer>> cellsToCheck = new LinkedList<>();
+        cellsToCheck.add(map.get(endingCell));
+        while(!cellsToCheck.isEmpty()) {
+            Pair<Integer, Integer> nextCell = cellsToCheck.poll();
+            cellLocations.add(nextCell);
+            if (map.containsKey(nextCell)) cellsToCheck.add(map.get(nextCell));
+        }
+        return cellLocations;
     }
 }
