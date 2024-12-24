@@ -1,10 +1,12 @@
 package year2024;
 
 import base.AoCDay;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class KeypadConundrum extends AoCDay {
 
@@ -30,17 +32,46 @@ public class KeypadConundrum extends AoCDay {
             '>', Pair.of(1, 2)
     );
 
-    // how many manual button presses does it take to move from one char to the next, N keypads deep (including manual activation)?
-    private final Map<Pair<Integer, Pair<Character, Character>>, Long> distanceMap = new HashMap<>();
+    private final Map<Pair<Character, Character>, Set<String>> numPadMoves = new HashMap<>();
+    private final Map<Pair<Character, Character>, Set<String>> dirPadMoves = new HashMap<>();
+
+    // how many manual button presses does it take to execute a given sequence of moves, N keypads deep?
+    private final Map<Pair<Integer, String>, Long> moveCache = new HashMap<>();
 
     public void solve() {
         timeMarkers[0] = Instant.now().toEpochMilli();
         List<String> lines = readResourceFile(2024, 21, false, 0);
+        findNumPadMoves();
+        findDirPadMoves();
         timeMarkers[1] = Instant.now().toEpochMilli();
-        part1Answer = getTotalComplexity(lines, 3);
+        part1Answer = getTotalComplexity(lines, 2);
         timeMarkers[2] = Instant.now().toEpochMilli();
-        part2Answer = getTotalComplexity(lines, 26);
+        part2Answer = getTotalComplexity(lines, 25);
         timeMarkers[3] = Instant.now().toEpochMilli();
+    }
+
+    private void findNumPadMoves() {
+        for (char from : numPadCells.keySet()) {
+            for (char to : numPadCells.keySet()) {
+                if (from != to) {
+                    numPadMoves.put(Pair.of(from, to), generateNumPadMoves(numPadCells.get(from), numPadCells.get(to)));
+                } else {
+                    numPadMoves.put(Pair.of(from, to), Set.of("A"));
+                }
+            }
+        }
+    }
+
+    private void findDirPadMoves() {
+        for (char from : dirPadCells.keySet()) {
+            for (char to : dirPadCells.keySet()) {
+                if (from != to) {
+                    dirPadMoves.put(Pair.of(from, to), generateDirPadMoves(dirPadCells.get(from), dirPadCells.get(to)));
+                } else {
+                    dirPadMoves.put(Pair.of(from, to), Set.of("A"));
+                }
+            }
+        }
     }
 
     private long getTotalComplexity(List<String> lines, int dirPadCount) {
@@ -48,28 +79,41 @@ public class KeypadConundrum extends AoCDay {
     }
 
     private long getLineComplexity(String line, int dirPadCount) {
-        return Long.parseLong(line.substring(0, 3), 10) * countSteps(line, dirPadCount, dirPadCount);
+        Set<String> possibleNumpadMoves = getPossibleNumpadMoves(line);
+        return Long.parseLong(line.substring(0, 3), 10) * possibleNumpadMoves.stream().map(instructions -> countSteps(instructions, dirPadCount)).min(Comparator.naturalOrder()).orElse(0L);
     }
 
-    private long countSteps(String line, int dirPadCount, int totalDirPadCount) {
-        long sum = 0;
+    private Set<String> getPossibleNumpadMoves(String line) {
+        Set<String> output = new HashSet<>();
+        output.add("");
         for (int i = 0; i < line.length(); i++) {
-            sum += getShortestPathBetween((i == 0 ? 'A' : line.charAt(i-1)), line.charAt(i), dirPadCount, totalDirPadCount);
+            output = Sets.cartesianProduct(output, numPadMoves.get(Pair.of((i == 0 ? 'A' : line.charAt(i - 1)), line.charAt(i)))).stream().map(e -> e.stream().reduce(String::concat).orElse("")).collect(Collectors.toSet());
         }
+        return output;
+    }
+
+    private long countSteps(String line, int dirPadCount) {
+        if (dirPadCount == 0) return line.length();
+        Pair<Integer, String> key = Pair.of(dirPadCount, line);
+        if (moveCache.containsKey(key)) return moveCache.get(key);
+        long sum = 0;
+        String[] moves = line.split("A");
+        for (String move : moves) {
+            Set<String> output = new HashSet<>();
+            output.add("");
+            for (int i = 0; i <= move.length(); i++) {
+                output = Sets.cartesianProduct(output, dirPadMoves.get(
+                        Pair.of(
+                                (i == 0 ? 'A' : move.charAt(i - 1)),
+                                (i == move.length() ? 'A' : move.charAt(i)))
+                )).stream().map(e -> e.stream().reduce(String::concat).orElse("")).collect(Collectors.toSet());
+            }
+            sum += output.stream().map(e -> countSteps(e, dirPadCount - 1)).min(Comparator.naturalOrder()).orElse(0L);
+        }
+        moveCache.put(key, sum);
         return sum;
     }
 
-    private long getShortestPathBetween(char start, char end, int dirPadCount, int totalDirPadCount) {
-        // dirPadCount includes the manually operated one
-        // add one at the end to account for pressing A
-        if (dirPadCount == 1) return getManhattanDistance(dirPadCells.get(start), dirPadCells.get(end)) + 1;
-        Pair<Integer, Pair<Character, Character>> key = Pair.of(dirPadCount, Pair.of(start, end));
-        if (distanceMap.containsKey(key)) return distanceMap.get(key);
-        Set<String> possibleMoves = (dirPadCount == totalDirPadCount ? generateNumPadMoves(numPadCells.get(start), numPadCells.get(end)) : generateDirPadMoves(dirPadCells.get(start), dirPadCells.get(end)));
-        long sum = possibleMoves.stream().map(line -> countSteps(line, dirPadCount - 1, totalDirPadCount)).min(Comparator.naturalOrder()).orElse(0L);
-        distanceMap.put(key, sum);
-        return sum;
-    }
 
 
     private Set<String> generateNumPadMoves(Pair<Integer, Integer> currentPos, Pair<Integer, Integer> endPos) {
@@ -90,8 +134,8 @@ public class KeypadConundrum extends AoCDay {
     private Set<String> generateDirPadMoves(Pair<Integer, Integer> currentPos, Pair<Integer, Integer> endPos) {
         // not sure if moving horizontally or vertically first is optimal
         // just check both (if they are both valid, i.e. avoiding empty cells)
-        boolean vertFirstForced = (currentPos.getLeft() == 3 && endPos.getRight() == 0);
-        boolean horzFirstForced = (currentPos.getRight() == 0 && endPos.getLeft() == 3);
+        boolean vertFirstForced = (currentPos.getLeft() == 0 && endPos.getRight() == 0);
+        boolean horzFirstForced = (currentPos.getRight() == 0 && endPos.getLeft() == 0);
         Set<String> result = new HashSet<>();
         if (!vertFirstForced) {
             result.add(generateMoves(currentPos, endPos, false));
@@ -103,38 +147,38 @@ public class KeypadConundrum extends AoCDay {
     }
 
     private String generateMoves(Pair<Integer, Integer> currentPos, Pair<Integer, Integer> endPos, boolean vertFirst) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         if (vertFirst) {
             int vertDiff = endPos.getLeft() - currentPos.getLeft();
             while (vertDiff < 0) {
-                result += "^";
+                result.append("^");
                 vertDiff++;
             }
             while (vertDiff > 0) {
-                result += "v";
+                result.append("v");
                 vertDiff--;
             }
         }
         int horzDiff = endPos.getRight() - currentPos.getRight();
         while (horzDiff < 0) {
-            result += '<';
+            result.append('<');
             horzDiff++;
         }
         while (horzDiff > 0) {
-            result += '>';
+            result.append('>');
             horzDiff--;
         }
         if (!vertFirst) {
             int vertDiff = endPos.getLeft() - currentPos.getLeft();
             while (vertDiff < 0) {
-                result += "^";
+                result.append("^");
                 vertDiff++;
             }
             while (vertDiff > 0) {
-                result += "v";
+                result.append("v");
                 vertDiff--;
             }
         }
-        return result + 'A';
+        return result.toString() + 'A';
     }
 }
