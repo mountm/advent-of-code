@@ -1,12 +1,10 @@
 package year2024;
 
 import base.AoCDay;
-import com.google.common.collect.Sets;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class KeypadConundrum extends AoCDay {
 
@@ -32,54 +30,76 @@ public class KeypadConundrum extends AoCDay {
             '>', Pair.of(1, 2)
     );
 
+    // how many manual button presses does it take to move from one char to the next, N keypads deep (including manual activation)?
+    private final Map<Pair<Integer, Pair<Character, Character>>, Long> distanceMap = new HashMap<>();
+
     public void solve() {
         timeMarkers[0] = Instant.now().toEpochMilli();
         List<String> lines = readResourceFile(2024, 21, false, 0);
         timeMarkers[1] = Instant.now().toEpochMilli();
-        part1Answer = solvePartOne(lines);
+        part1Answer = getTotalComplexity(lines, 3);
         timeMarkers[2] = Instant.now().toEpochMilli();
+        part2Answer = getTotalComplexity(lines, 26);
         timeMarkers[3] = Instant.now().toEpochMilli();
     }
 
-    private int solvePartOne(List<String> lines) {
-        return lines.stream().map(this::getLineComplexity).reduce(Integer::sum).orElse(-1);
+    private long getTotalComplexity(List<String> lines, int dirPadCount) {
+        return lines.stream().map(line -> getLineComplexity(line, dirPadCount)).reduce(Long::sum).orElse(-1L);
     }
 
-    private int getLineComplexity(String line) {
-        return Integer.parseInt(line.substring(0, 3), 10) * countSteps(line);
+    private long getLineComplexity(String line, int dirPadCount) {
+        return Long.parseLong(line.substring(0, 3), 10) * countSteps(line, dirPadCount, dirPadCount);
     }
 
-    private int countSteps(String line) {
-        Set<String> validCommandStrings = getCommandSequencesFromNumPadString(line);
-        return getCommandSequenceFromDirPadStrings(getCommandSequenceFromDirPadStrings(validCommandStrings)).stream().map(String::length).min(Comparator.naturalOrder()).orElse(-1);
-    }
-
-    private Set<String> getCommandSequencesFromNumPadString(String input) {
-        Set<String> results = new HashSet<>();
-        results.add("");
-        Pair<Integer, Integer> currentPos = numPadCells.get('A');
-        for (char c : input.toCharArray()) {
-            Pair<Integer, Integer> nextPos = numPadCells.get(c);
-            results = Sets.cartesianProduct(results, generateNumPadMoves(currentPos, nextPos)).stream().map(e -> e.stream().reduce(String::concat).orElse("")).collect(Collectors.toSet());
-            currentPos = nextPos;
+    private long countSteps(String line, int dirPadCount, int totalDirPadCount) {
+        long sum = 0;
+        for (int i = 0; i < line.length(); i++) {
+            sum += getShortestPathBetween((i == 0 ? 'A' : line.charAt(i-1)), line.charAt(i), dirPadCount, totalDirPadCount);
         }
-        return results;
+        return sum;
     }
 
-    private Set<String> getCommandSequenceFromDirPadStrings(Set<String> inputs) {
-        Set<String> output = new HashSet<>();
-        for (String input : inputs) {
-            Set<String> results = new HashSet<>();
-            results.add("");
-            Pair<Integer, Integer> currentPos = dirPadCells.get('A');
-            for (char c : input.toCharArray()) {
-                Pair<Integer, Integer> nextPos = dirPadCells.get(c);
-                results = Sets.cartesianProduct(results, generateDirPadMoves(currentPos, nextPos)).stream().map(e -> e.stream().reduce(String::concat).orElse("")).collect(Collectors.toSet());
-                currentPos = nextPos;
-            }
-            output.addAll(results);
+    private long getShortestPathBetween(char start, char end, int dirPadCount, int totalDirPadCount) {
+        // dirPadCount includes the manually operated one
+        // add one at the end to account for pressing A
+        if (dirPadCount == 1) return getManhattanDistance(dirPadCells.get(start), dirPadCells.get(end)) + 1;
+        Pair<Integer, Pair<Character, Character>> key = Pair.of(dirPadCount, Pair.of(start, end));
+        if (distanceMap.containsKey(key)) return distanceMap.get(key);
+        Set<String> possibleMoves = (dirPadCount == totalDirPadCount ? generateNumPadMoves(numPadCells.get(start), numPadCells.get(end)) : generateDirPadMoves(dirPadCells.get(start), dirPadCells.get(end)));
+        long sum = possibleMoves.stream().map(line -> countSteps(line, dirPadCount - 1, totalDirPadCount)).min(Comparator.naturalOrder()).orElse(0L);
+        distanceMap.put(key, sum);
+        return sum;
+    }
+
+
+    private Set<String> generateNumPadMoves(Pair<Integer, Integer> currentPos, Pair<Integer, Integer> endPos) {
+        // not sure if moving horizontally or vertically first is optimal
+        // just check both (if they are both valid, i.e. avoiding empty cells)
+        boolean vertFirstForced = (currentPos.getLeft() == 3 && endPos.getRight() == 0);
+        boolean horzFirstForced = (currentPos.getRight() == 0 && endPos.getLeft() == 3);
+        Set<String> result = new HashSet<>();
+        if (!vertFirstForced) {
+            result.add(generateMoves(currentPos, endPos, false));
         }
-        return output;
+        if (!horzFirstForced) {
+            result.add(generateMoves(currentPos, endPos, true));
+        }
+        return result;
+    }
+
+    private Set<String> generateDirPadMoves(Pair<Integer, Integer> currentPos, Pair<Integer, Integer> endPos) {
+        // not sure if moving horizontally or vertically first is optimal
+        // just check both (if they are both valid, i.e. avoiding empty cells)
+        boolean vertFirstForced = (currentPos.getLeft() == 3 && endPos.getRight() == 0);
+        boolean horzFirstForced = (currentPos.getRight() == 0 && endPos.getLeft() == 3);
+        Set<String> result = new HashSet<>();
+        if (!vertFirstForced) {
+            result.add(generateMoves(currentPos, endPos, false));
+        }
+        if (!horzFirstForced) {
+            result.add(generateMoves(currentPos, endPos, true));
+        }
+        return result;
     }
 
     private String generateMoves(Pair<Integer, Integer> currentPos, Pair<Integer, Integer> endPos, boolean vertFirst) {
@@ -116,31 +136,5 @@ public class KeypadConundrum extends AoCDay {
             }
         }
         return result + 'A';
-    }
-
-    private Set<String> generateNumPadMoves(Pair<Integer, Integer> currentPos, Pair<Integer, Integer> endPos) {
-        boolean vertFirstForced = (currentPos.getLeft() == 3 && endPos.getRight() == 0);
-        boolean horzFirstForced = (currentPos.getRight() == 0 && endPos.getLeft() == 3);
-        Set<String> result = new HashSet<>();
-        if (!vertFirstForced) {
-            result.add(generateMoves(currentPos, endPos, false));
-        }
-        if (!horzFirstForced) {
-            result.add(generateMoves(currentPos, endPos, true));
-        }
-        return result;
-    }
-
-    private Set<String> generateDirPadMoves(Pair<Integer, Integer> currentPos, Pair<Integer, Integer> endPos) {
-        boolean vertFirstForced = (currentPos.getLeft() == 3 && endPos.getRight() == 0);
-        boolean horzFirstForced = (currentPos.getRight() == 0 && endPos.getLeft() == 3);
-        Set<String> result = new HashSet<>();
-        if (!vertFirstForced) {
-            result.add(generateMoves(currentPos, endPos, false));
-        }
-        if (!horzFirstForced) {
-            result.add(generateMoves(currentPos, endPos, true));
-        }
-        return result;
     }
 }
