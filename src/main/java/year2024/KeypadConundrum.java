@@ -51,11 +51,7 @@ public class KeypadConundrum extends AoCDay {
     private void findNumPadMoves() {
         for (char from : numPadCells.keySet()) {
             for (char to : numPadCells.keySet()) {
-                if (from != to) {
-                    numPadMoves.put(Pair.of(from, to), generateNumPadMoves(numPadCells.get(from), numPadCells.get(to)));
-                } else {
-                    numPadMoves.put(Pair.of(from, to), "A");
-                }
+                numPadMoves.put(Pair.of(from, to), generateNumPadMoves(numPadCells.get(from), numPadCells.get(to)));
             }
         }
     }
@@ -63,11 +59,7 @@ public class KeypadConundrum extends AoCDay {
     private void findDirPadMoves() {
         for (char from : dirPadCells.keySet()) {
             for (char to : dirPadCells.keySet()) {
-                if (from != to) {
-                    dirPadMoves.put(Pair.of(from, to), generateDirPadMoves(dirPadCells.get(from), dirPadCells.get(to)));
-                } else {
-                    dirPadMoves.put(Pair.of(from, to), "A");
-                }
+                dirPadMoves.put(Pair.of(from, to), generateDirPadMoves(dirPadCells.get(from), dirPadCells.get(to)));
             }
         }
     }
@@ -77,6 +69,7 @@ public class KeypadConundrum extends AoCDay {
     }
 
     private long getLineComplexity(String line, int dirPadCount) {
+        System.out.println("Number of steps for code " + line + ": " + countSteps(getNumpadMoves(line), dirPadCount));
         return Long.parseLong(line.substring(0, 3), 10) * countSteps(getNumpadMoves(line), dirPadCount);
     }
 
@@ -97,7 +90,7 @@ public class KeypadConundrum extends AoCDay {
         for (String move : moves) {
             StringBuilder output = new StringBuilder();
             for (int i = 0; i <= move.length(); i++) {
-                // losing As in the regex, so you have to put them back in here
+                // losing A's in the regex, so you have to put them back in here
                 output.append(dirPadMoves.get(
                         Pair.of(
                                 (i == 0 ? 'A' : move.charAt(i - 1)),
@@ -141,11 +134,11 @@ public class KeypadConundrum extends AoCDay {
         }
         int horzDiff = endPos.getRight() - startPos.getRight();
         while (horzDiff < 0) {
-            result.append('<');
+            result.append("<");
             horzDiff++;
         }
         while (horzDiff > 0) {
-            result.append('>');
+            result.append(">");
             horzDiff--;
         }
         if (!vertFirst) {
@@ -159,6 +152,6 @@ public class KeypadConundrum extends AoCDay {
                 vertDiff--;
             }
         }
-        return result.toString() + 'A';
+        return result + "A";
     }
 }
