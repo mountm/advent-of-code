@@ -102,6 +102,7 @@ public class KeypadConundrum extends AoCDay {
             Set<String> output = new HashSet<>();
             output.add("");
             for (int i = 0; i <= move.length(); i++) {
+                // losing As in the regex, so you have to put them back in here
                 output = Sets.cartesianProduct(output, dirPadMoves.get(
                         Pair.of(
                                 (i == 0 ? 'A' : move.charAt(i - 1)),
