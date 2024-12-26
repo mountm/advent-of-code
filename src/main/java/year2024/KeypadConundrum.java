@@ -69,7 +69,6 @@ public class KeypadConundrum extends AoCDay {
     }
 
     private long getLineComplexity(String line, int dirPadCount) {
-        System.out.println("Number of steps for code " + line + ": " + countSteps(getNumpadMoves(line), dirPadCount));
         return Long.parseLong(line.substring(0, 3), 10) * countSteps(getNumpadMoves(line), dirPadCount);
     }
 
@@ -83,6 +82,7 @@ public class KeypadConundrum extends AoCDay {
 
     private long countSteps(String line, int dirPadCount) {
         if (dirPadCount == 0) return line.length();
+        if ("A".equals(line)) return 1;
         Pair<Integer, String> key = Pair.of(dirPadCount, line);
         if (moveCache.containsKey(key)) return moveCache.get(key);
         long sum = 0;
