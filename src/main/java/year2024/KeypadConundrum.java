@@ -106,16 +106,22 @@ public class KeypadConundrum extends AoCDay {
 
 
     private String generateNumPadMoves(Pair<Integer, Integer> startPos, Pair<Integer, Integer> endPos) {
-        // go left first, if you can
-        // otherwise go vertically first
-        boolean vertFirst = endPos.getRight() >= startPos.getRight() || (startPos.getLeft() == 3 && endPos.getRight() == 0);
+        // go left first, if necessary
+        boolean vertFirst = startPos.getRight() <= endPos.getRight();
+        // but if that would involve going over the blank square, go vertically
+        if (startPos.getLeft() == 3 && endPos.getRight() == 0) vertFirst = true;
+        // and if THAT would move you over the blank square, go horizontally
+        if (startPos.getRight() == 0 && endPos.getLeft() == 3) vertFirst = false;
         return generateMoves(startPos, endPos, vertFirst);
     }
 
     private String generateDirPadMoves(Pair<Integer, Integer> startPos, Pair<Integer, Integer> endPos) {
-        // go left first, if you can
-        // otherwise go vertically first
-        boolean vertFirst = endPos.getRight() >= startPos.getRight() || (startPos.getLeft() == 0 && endPos.getRight() == 0);
+        // go left first, if necessary
+        boolean vertFirst = startPos.getRight() <= endPos.getRight();
+        // but if that would involve going over the blank square, go vertically
+        if (startPos.getLeft() == 0 && endPos.getRight() == 0) vertFirst = true;
+        // and if THAT would move you over the blank square, go horizontally
+        if (startPos.getRight() == 0 && endPos.getLeft() == 0) vertFirst = false;
         return generateMoves(startPos, endPos, vertFirst);
     }
 
