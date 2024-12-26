@@ -29,10 +29,6 @@ public class MonkeyMarket extends AoCDay {
         return salePrices.values().stream().max(Comparator.naturalOrder()).orElse(-1);
     }
 
-    private int findBestSequence(Set<Map<Quartet<Integer, Integer, Integer, Integer>, Integer>> salePrices) {
-        return salePrices.stream().flatMap(map -> map.keySet().stream()).map(key -> salePrices.stream().map(map -> map.getOrDefault(key, 0)).reduce(Integer::sum).orElse(0)).max(Comparator.naturalOrder()).orElse(-1);
-    }
-
     private Map<Quartet<Integer, Integer, Integer, Integer>, Integer> makeSalePriceMap(int startingVal) {
         Map<Quartet<Integer, Integer, Integer, Integer>, Integer> output = new HashMap<>();
         List<Integer> prices = getPrices(startingVal);
