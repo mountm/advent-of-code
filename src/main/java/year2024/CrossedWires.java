@@ -53,7 +53,7 @@ public class CrossedWires extends AoCDay {
         timeMarkers[3] = Instant.now().toEpochMilli();
     }
 
-    private int solvePartTwo(Set<Quartet<String, String, String, String>> operations) {
+    private String solvePartTwo(Set<Quartet<String, String, String, String>> operations) {
         Map<AdderGate, Set<Triplet<String, String, String>>> assignments = new HashMap<>();
         Set<String> faultyElements = new HashSet<>();
         assignments.put(INPUTS_XOR, operations.stream().filter(o -> o.getValue2().equals("XOR") && (o.getValue0().contains("x") || o.getValue0().contains("y"))).map(o -> Triplet.with(o.getValue0(), o.getValue1(), o.getValue3())).collect(Collectors.toSet()));
@@ -72,15 +72,9 @@ public class CrossedWires extends AoCDay {
             } else {
                 // this should feed into a SUM_XOR and a CARRY_AND
                 if (assignments.get(SUM_XOR).stream().noneMatch(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire))) {
-                    System.out.println(presumptiveOutputWire);
-                    System.out.println("Claims to be the output of INPUTS_XOR, but it doesn't feed a SUM_XOR");
-                    System.out.println(operations.stream().filter(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire)).collect(Collectors.toSet()));
                     faultyElements.add(presumptiveOutputWire);
                 }
                 if (assignments.get(CARRY_AND).stream().noneMatch(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire))) {
-                    System.out.println(presumptiveOutputWire);
-                    System.out.println("Claims to be the output of INPUTS_XOR, but it doesn't feed a CARRY_AND");
-                    System.out.println(operations.stream().filter(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire)).collect(Collectors.toSet()));
                     faultyElements.add(presumptiveOutputWire);
                 }
             }
@@ -91,23 +85,14 @@ public class CrossedWires extends AoCDay {
                 // half adder, this should be treated as a carry bit
                 // this should feed into a SUM_XOR and a CARRY_AND
                 if (assignments.get(SUM_XOR).stream().noneMatch(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire))) {
-                    System.out.println(presumptiveOutputWire);
-                    System.out.println("Claims to be the output of INPUTS_AND in half adder, but it doesn't feed a SUM_XOR");
-                    System.out.println(operations.stream().filter(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire)).collect(Collectors.toSet()));
                     faultyElements.add(presumptiveOutputWire);
                 }
                 if (assignments.get(CARRY_AND).stream().noneMatch(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire))) {
-                    System.out.println(presumptiveOutputWire);
-                    System.out.println("Claims to be the output of INPUTS_AND in half adder, but it doesn't feed a CARRY_AND");
-                    System.out.println(operations.stream().filter(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire)).collect(Collectors.toSet()));
                     faultyElements.add(presumptiveOutputWire);
                 }
             } else {
                 // this should feed into an OR
                 if (assignments.get(CARRY_OR).stream().noneMatch(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire))) {
-                    System.out.println(presumptiveOutputWire);
-                    System.out.println("Claims to be the output of INPUTS_AND, but it doesn't feed a CARRY_OR");
-                    System.out.println(operations.stream().filter(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire)).collect(Collectors.toSet()));
                     faultyElements.add(presumptiveOutputWire);
                 }
             }
@@ -116,9 +101,6 @@ public class CrossedWires extends AoCDay {
             String presumptiveOutputWire = assignment.getValue2();
             // this should be an output bit
             if (!presumptiveOutputWire.contains("z")) {
-                System.out.println(presumptiveOutputWire);
-                System.out.println("Claims to be the output of SUM_XOR, but it's not an output bit");
-                System.out.println(operations.stream().filter(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire)).collect(Collectors.toSet()));
                 faultyElements.add(presumptiveOutputWire);
             }
         }
@@ -126,9 +108,6 @@ public class CrossedWires extends AoCDay {
             String presumptiveOutputWire = assignment.getValue2();
             // this should feed into an OR
             if (assignments.get(CARRY_OR).stream().noneMatch(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire))) {
-                System.out.println(presumptiveOutputWire);
-                System.out.println("Claims to be the output of CARRY_AND, but it doesn't feed a CARRY_OR");
-                System.out.println(operations.stream().filter(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire)).collect(Collectors.toSet()));
                 faultyElements.add(presumptiveOutputWire);
             }
         }
@@ -137,21 +116,14 @@ public class CrossedWires extends AoCDay {
             // this should either be the final output bit, or feed into a SUM_XOR and CARRY_AND
             if (!presumptiveOutputWire.equals("z" + (INPUT_SIZE + 1))) {
                 if (assignments.get(SUM_XOR).stream().noneMatch(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire))) {
-                    System.out.println(presumptiveOutputWire);
-                    System.out.println("Claims to be the output of CARRY_OR, but it doesn't feed a SUM_XOR");
-                    System.out.println(operations.stream().filter(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire)).collect(Collectors.toSet()));
                     faultyElements.add(presumptiveOutputWire);
                 }
                 if (assignments.get(CARRY_AND).stream().noneMatch(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire))) {
-                    System.out.println(presumptiveOutputWire);
-                    System.out.println("Claims to be the output of CARRY_OR, but it doesn't feed a CARRY_AND");
-                    System.out.println(operations.stream().filter(o -> o.getValue0().equals(presumptiveOutputWire) || o.getValue1().equals(presumptiveOutputWire)).collect(Collectors.toSet()));
                     faultyElements.add(presumptiveOutputWire);
                 }
             }
         }
-        System.out.println(faultyElements);
-        return faultyElements.size();
+        return faultyElements.stream().sorted().collect(Collectors.joining(","));
     }
 
     private long solvePartOne(Map<String, Long> wireValues, Set<Quartet<String, String, String, String>> operations) {
