@@ -1,10 +1,12 @@
 package year2024;
 
 import base.AoCDay;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class KeypadConundrum extends AoCDay {
 
@@ -30,8 +32,8 @@ public class KeypadConundrum extends AoCDay {
             '>', Pair.of(1, 2)
     );
 
-    private final Map<Pair<Character, Character>, String> numPadMoves = new HashMap<>();
-    private final Map<Pair<Character, Character>, String> dirPadMoves = new HashMap<>();
+    private final Map<Pair<Character, Character>, Set<String>> numPadMoves = new HashMap<>();
+    private final Map<Pair<Character, Character>, Set<String>> dirPadMoves = new HashMap<>();
 
     // how many manual button presses does it take to execute a given sequence of moves, N keypads deep?
     private final Map<Pair<Integer, String>, Long> moveCache = new HashMap<>();
@@ -69,16 +71,17 @@ public class KeypadConundrum extends AoCDay {
     }
 
     private long getLineComplexity(String line, int dirPadCount) {
-        System.out.println("Number of steps for code " + line + ": " + countSteps(getNumpadMoves(line), dirPadCount));
-        return Long.parseLong(line.substring(0, 3), 10) * countSteps(getNumpadMoves(line), dirPadCount);
+        Set<String> possibleNumpadMoves = getPossibleNumpadMoves(line);
+        return Long.parseLong(line.substring(0, 3), 10) * possibleNumpadMoves.stream().map(instructions -> countSteps(instructions, dirPadCount)).min(Comparator.naturalOrder()).orElse(0L);
     }
 
-    private String getNumpadMoves(String line) {
-        StringBuilder output = new StringBuilder();
+    private Set<String> getPossibleNumpadMoves(String line) {
+        Set<String> output = new HashSet<>();
+        output.add("");
         for (int i = 0; i < line.length(); i++) {
-            output.append(numPadMoves.get(Pair.of((i == 0 ? 'A' : line.charAt(i - 1)), line.charAt(i))));
+            output = Sets.cartesianProduct(output, numPadMoves.get(Pair.of((i == 0 ? 'A' : line.charAt(i - 1)), line.charAt(i)))).stream().map(e -> e.stream().reduce(String::concat).orElse("")).collect(Collectors.toSet());
         }
-        return output.toString();
+        return output;
     }
 
     private long countSteps(String line, int dirPadCount) {
@@ -88,16 +91,17 @@ public class KeypadConundrum extends AoCDay {
         long sum = 0;
         String[] moves = line.split("A");
         for (String move : moves) {
-            StringBuilder output = new StringBuilder();
+            Set<String> output = new HashSet<>();
+            output.add("");
             for (int i = 0; i <= move.length(); i++) {
-                // losing A's in the regex, so you have to put them back in here
-                output.append(dirPadMoves.get(
+                // losing As in the regex, so you have to put them back in here
+                output = Sets.cartesianProduct(output, dirPadMoves.get(
                         Pair.of(
                                 (i == 0 ? 'A' : move.charAt(i - 1)),
                                 (i == move.length() ? 'A' : move.charAt(i)))
-                ));
+                )).stream().map(e -> e.stream().reduce(String::concat).orElse("")).collect(Collectors.toSet());
             }
-            sum += countSteps(output.toString(), dirPadCount - 1);
+            sum += output.stream().map(e -> countSteps(e, dirPadCount - 1)).min(Comparator.naturalOrder()).orElse(0L);
         }
         moveCache.put(key, sum);
         return sum;
@@ -105,24 +109,40 @@ public class KeypadConundrum extends AoCDay {
 
 
 
-    private String generateNumPadMoves(Pair<Integer, Integer> startPos, Pair<Integer, Integer> endPos) {
-        // go left first, if you can
-        // otherwise go vertically first
-        boolean vertFirst = endPos.getRight() >= startPos.getRight() || (startPos.getLeft() == 3 && endPos.getRight() == 0);
-        return generateMoves(startPos, endPos, vertFirst);
+    private Set<String> generateNumPadMoves(Pair<Integer, Integer> currentPos, Pair<Integer, Integer> endPos) {
+        // not sure if moving horizontally or vertically first is optimal
+        // just check both (if they are both valid, i.e. avoiding empty cells)
+        boolean vertFirstForced = (currentPos.getLeft() == 3 && endPos.getRight() == 0);
+        boolean horzFirstForced = (currentPos.getRight() == 0 && endPos.getLeft() == 3);
+        Set<String> result = new HashSet<>();
+        if (!vertFirstForced) {
+            result.add(generateMoves(currentPos, endPos, false));
+        }
+        if (!horzFirstForced) {
+            result.add(generateMoves(currentPos, endPos, true));
+        }
+        return result;
     }
 
-    private String generateDirPadMoves(Pair<Integer, Integer> startPos, Pair<Integer, Integer> endPos) {
-        // go left first, if you can
-        // otherwise go vertically first
-        boolean vertFirst = endPos.getRight() >= startPos.getRight() || (startPos.getLeft() == 0 && endPos.getRight() == 0);
-        return generateMoves(startPos, endPos, vertFirst);
+    private Set<String> generateDirPadMoves(Pair<Integer, Integer> currentPos, Pair<Integer, Integer> endPos) {
+        // not sure if moving horizontally or vertically first is optimal
+        // just check both (if they are both valid, i.e. avoiding empty cells)
+        boolean vertFirstForced = (currentPos.getLeft() == 0 && endPos.getRight() == 0);
+        boolean horzFirstForced = (currentPos.getRight() == 0 && endPos.getLeft() == 0);
+        Set<String> result = new HashSet<>();
+        if (!vertFirstForced) {
+            result.add(generateMoves(currentPos, endPos, false));
+        }
+        if (!horzFirstForced) {
+            result.add(generateMoves(currentPos, endPos, true));
+        }
+        return result;
     }
 
-    private String generateMoves(Pair<Integer, Integer> startPos, Pair<Integer, Integer> endPos, boolean vertFirst) {
+    private String generateMoves(Pair<Integer, Integer> currentPos, Pair<Integer, Integer> endPos, boolean vertFirst) {
         StringBuilder result = new StringBuilder();
         if (vertFirst) {
-            int vertDiff = endPos.getLeft() - startPos.getLeft();
+            int vertDiff = endPos.getLeft() - currentPos.getLeft();
             while (vertDiff < 0) {
                 result.append("^");
                 vertDiff++;
@@ -132,7 +152,7 @@ public class KeypadConundrum extends AoCDay {
                 vertDiff--;
             }
         }
-        int horzDiff = endPos.getRight() - startPos.getRight();
+        int horzDiff = endPos.getRight() - currentPos.getRight();
         while (horzDiff < 0) {
             result.append("<");
             horzDiff++;
@@ -142,7 +162,7 @@ public class KeypadConundrum extends AoCDay {
             horzDiff--;
         }
         if (!vertFirst) {
-            int vertDiff = endPos.getLeft() - startPos.getLeft();
+            int vertDiff = endPos.getLeft() - currentPos.getLeft();
             while (vertDiff < 0) {
                 result.append("^");
                 vertDiff++;
