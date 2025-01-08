@@ -4,7 +4,9 @@ import base.AoCDay;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class HoofIt extends AoCDay {
 
@@ -30,13 +32,13 @@ public class HoofIt extends AoCDay {
             offset += puzzleSize;
         }
         timeMarkers[1] = Instant.now().toEpochMilli();
-        part1Answer = part1(puzzle, peakPositions, puzzleSize);
+        part1Answer = getTrailheadScores(puzzle, peakPositions, puzzleSize);
         timeMarkers[2] = Instant.now().toEpochMilli();
-        part2Answer = part2(puzzle, puzzleSize);
+        part2Answer = getTrailheadRatings(puzzle, puzzleSize);
         timeMarkers[3] = Instant.now().toEpochMilli();
     }
 
-    private int part1(int[] puzzle, List<Integer> peakPositions, int puzzleSize) {
+    private int getTrailheadScores(int[] puzzle, List<Integer> peakPositions, int puzzleSize) {
         int sum = 0;
         for (int i = 0; i < puzzle.length; i++) {
             if (puzzle[i] == 0) {
@@ -46,7 +48,7 @@ public class HoofIt extends AoCDay {
         return sum;
     }
 
-    private int part2(int[] puzzle, int puzzleSize) {
+    private int getTrailheadRatings(int[] puzzle, int puzzleSize) {
         int sum = 0;
         for (int i = 0; i < puzzle.length; i++) {
             if (puzzle[i] == 0) {

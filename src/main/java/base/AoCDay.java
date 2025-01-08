@@ -115,19 +115,17 @@ public class AoCDay {
         char[][] newGrid = new char[grid[0].length][grid.length];
         for (int r = 0; r < grid.length; r++) {
             for (int c = 0; c < grid[0].length; c++) {
-                newGrid[c][r] = grid[r][c];
+                newGrid[c][grid.length-1-r] = grid[r][c];
             }
         }
         return newGrid;
     }
 
-    protected char[][] rotateCharGridCounterClockwise(char[][] grid) {
-        int maxR = grid.length;
-        int maxC = grid[0].length;
-        char[][] newGrid = new char[maxR][maxC];
-        for (int r = 0; r < maxR; r++) {
-            for (int c = 0; c < maxC; c++) {
-                newGrid[c][maxR-1-r] = grid[r][c];
+    protected int[][] rotateIntGridClockwise(int[][] grid) {
+        int[][] newGrid = new int[grid[0].length][grid.length];
+        for (int r = 0; r < grid.length; r++) {
+            for (int c = 0; c < grid[0].length; c++) {
+                newGrid[c][grid.length-1-r] = grid[r][c];
             }
         }
         return newGrid;

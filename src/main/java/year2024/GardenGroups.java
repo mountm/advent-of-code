@@ -11,93 +11,17 @@ public class GardenGroups extends AoCDay {
         timeMarkers[0] = Instant.now().toEpochMilli();
         char[][] grid = convertToCharGrid(readResourceFile(2024, 12, false, 0));
         int[][] regionMap = determineRegions(grid);
+        Map<Integer, Integer> areas = new HashMap<>();
+        for (int[] rows : regionMap) {
+            for (int val : rows) {
+                areas.merge(val, 1, Integer::sum);
+            }
+        }
         timeMarkers[1] = Instant.now().toEpochMilli();
-        part1Answer = getFencePricing(regionMap);
+        part1Answer = getFencePricing(regionMap, areas);
         timeMarkers[2] = Instant.now().toEpochMilli();
-        part2Answer = getFenceSidePricing(regionMap);
+        part2Answer = getFenceSidePricing(regionMap, areas);
         timeMarkers[3] = Instant.now().toEpochMilli();
-    }
-
-    private int getFenceSidePricing(int[][] regionMap) {
-        Map<Integer, Integer> areas = new HashMap<>();
-        Map<Integer, Integer> fenceSides = new HashMap<>();
-        for (int i = 0; i < regionMap.length; i++) {
-            for (int j = 0; j < regionMap[i].length; j++) {
-                areas.merge(regionMap[i][j], 1, Integer::sum);
-                if (!fenceSides.containsKey(regionMap[i][j])) {
-                    fenceSides.put(regionMap[i][j], getFenceSides(regionMap, i, j));
-                }
-            }
-        }
-        int sum = 0;
-        for (int key : areas.keySet()) {
-            sum += areas.get(key) * fenceSides.get(key);
-        }
-        return sum;
-    }
-
-    private Integer getFenceSides(int[][] regionMap, int startPosY, int startPosX) {
-        int thisRegion = regionMap[startPosY][startPosX];
-        boolean[][] foundAbove = new boolean[regionMap.length][regionMap.length];
-        boolean[][] foundBelow = new boolean[regionMap.length][regionMap.length];
-        boolean[][] foundLeft = new boolean[regionMap.length][regionMap.length];
-        boolean[][] foundRight = new boolean[regionMap.length][regionMap.length];
-        for (int i = 0; i < regionMap.length; i++) {
-            for (int j = 0; j < regionMap.length; j++) {
-                if (regionMap[i][j] == thisRegion) {
-                    if (i == 0 || regionMap[i-1][j] != thisRegion) foundAbove[i][j] = true;
-                    if (i == regionMap.length - 1 || regionMap[i+1][j] != thisRegion) foundBelow[i][j] = true;
-                    if (j == 0 || regionMap[i][j-1] != thisRegion) foundLeft[i][j] = true;
-                    if (j == regionMap.length - 1 || regionMap[i][j+1] != thisRegion) foundRight[i][j] = true;
-                }
-            }
-        }
-        return countSides(foundAbove, false) + countSides(foundBelow, false) + countSides(foundLeft, true) + countSides(foundRight, true);
-    }
-
-    private Integer countSides(boolean[][] grid, boolean countVert) {
-        int count = 0;
-        boolean foundFence = false;
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length; j++) {
-                if ((countVert ? grid[j][i] : grid[i][j]) && !foundFence) {
-                    count++;
-                    foundFence = true;
-                }
-                if (!(countVert ? grid[j][i] : grid[i][j])) foundFence = false;
-            }
-        }
-        return count;
-    }
-
-    private int getFencePricing(int[][] regionMap) {
-        Map<Integer, Integer> areas = new HashMap<>();
-        Map<Integer, Integer> perimeters = new HashMap<>();
-        for (int i = 0; i < regionMap.length; i++) {
-            for (int j = 0; j < regionMap[i].length; j++) {
-                areas.merge(regionMap[i][j], 1, Integer::sum);
-                perimeters.merge(regionMap[i][j], getPerimeter(regionMap, i, j), Integer::sum);
-            }
-        }
-        int sum = 0;
-        for (int key : areas.keySet()) {
-            sum += areas.get(key) * perimeters.get(key);
-        }
-        return sum;
-    }
-
-    private int getPerimeter(int[][] regionMap, int i, int j) {
-        int perimeter = 0;
-        int cellVal = regionMap[i][j];
-        for (int m = -1; m <= 1; m++) {
-            for (int n = -1; n <= 1; n++) {
-                if (Math.abs(m) + Math.abs(n) < 2) {
-                    if (!isSafeCoord(i+m, j + n, regionMap.length)) perimeter++;
-                    else if (regionMap[i+m][j + n] != cellVal) perimeter++;
-                }
-            }
-        }
-        return perimeter;
     }
 
     private int[][] determineRegions(char[][] grid) {
@@ -128,4 +52,66 @@ public class GardenGroups extends AoCDay {
         }
         return regionMap;
     }
+
+    private int getFencePricing(int[][] regionMap, Map<Integer, Integer> areas) {
+        Map<Integer, Integer> perimeters = new HashMap<>();
+        for (int i = 0; i < regionMap.length; i++) {
+            for (int j = 0; j < regionMap[i].length; j++) {
+                perimeters.merge(regionMap[i][j], getPerimeter(regionMap, i, j), Integer::sum);
+            }
+        }
+
+        return calculateTotal(areas, perimeters);
+    }
+
+    private int getFenceSidePricing(int[][] regionMap, Map<Integer, Integer> areas) {
+        Map<Integer, Integer> fenceSides = new HashMap<>();
+        for (int rotationCount = 0; rotationCount < 4; rotationCount++) {
+            for (int i = 0; i < regionMap.length; i++) {
+                for (int j = 0; j < regionMap[i].length; j++) {
+                    fenceSides.merge(regionMap[i][j], countCorners(regionMap, i, j), Integer::sum);
+                }
+            }
+            if (rotationCount < 3) regionMap = rotateIntGridClockwise(regionMap);
+        }
+
+        return calculateTotal(areas, fenceSides);
+    }
+
+    private int getPerimeter(int[][] regionMap, int i, int j) {
+        int perimeter = 0;
+        int cellVal = regionMap[i][j];
+        for (int m = -1; m <= 1; m++) {
+            for (int n = -1; n <= 1; n++) {
+                if (Math.abs(m) + Math.abs(n) < 2) {
+                    if (!isSafeCoord(i+m, j + n, regionMap.length)) perimeter++;
+                    else if (regionMap[i+m][j + n] != cellVal) perimeter++;
+                }
+            }
+        }
+        return perimeter;
+    }
+
+    private Integer countCorners(int[][] regionMap, int i, int j) {
+        int count = 0;
+        // if you're in a corner of the map, that counts as a corner
+        if (i == 0 && j == 0) count++;
+        // check interior corner
+        if (isSafeCoord(i - 1, j - 1, regionMap.length) && regionMap[i-1][j] == regionMap[i][j] && regionMap[i][j-1] == regionMap[i][j] && regionMap[i-1][j-1] != regionMap[i][j]) count++;
+        // check exterior corner
+        if (isSafeCoord(i - 1, j - 1, regionMap.length) && regionMap[i-1][j] != regionMap[i][j] && regionMap[i][j-1] != regionMap[i][j]) count++;
+        if (i == 0 && j > 0 && regionMap[i][j-1] != regionMap[i][j]) count++;
+        if (i > 0 && j == 0 && regionMap[i-1][j] != regionMap[i][j]) count++;
+
+        return count;
+    }
+
+    private int calculateTotal(Map<Integer, Integer> map1, Map<Integer, Integer> map2) {
+        int sum = 0;
+        for (int key : map1.keySet()) {
+            sum += map1.get(key) * map2.get(key);
+        }
+        return sum;
+    }
+
 }
