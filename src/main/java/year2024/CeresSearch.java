@@ -50,9 +50,16 @@ public class CeresSearch extends AoCDay {
     }
     private int countMatchesStartingFromPosition(char[][] puzzle, int iStart, int jStart) {
         Set<Character> mustHave = Set.of('S', 'M');
-        Set<Character> set1 = Set.of(puzzle[iStart+1][jStart+1], puzzle[iStart - 1][jStart - 1]);
-        Set<Character> set2 = Set.of(puzzle[iStart+1][jStart-1], puzzle[iStart - 1][jStart + 1]);
-        return (set1.containsAll(mustHave) && set2.containsAll(mustHave)) ? 1 : 0;
+        try {
+            Set<Character> set1 = Set.of(puzzle[iStart+1][jStart+1], puzzle[iStart - 1][jStart - 1]);
+            Set<Character> set2 = Set.of(puzzle[iStart+1][jStart-1], puzzle[iStart - 1][jStart + 1]);
+            if (set1.containsAll(mustHave) && set2.containsAll(mustHave)) {
+                return 1;
+            }
+        } catch(IllegalArgumentException ignored) {
+
+        }
+        return 0;
     }
 
     private int countAdjacentMatchesInDirection(char[][] puzzle, String pattern, int iStart, int jStart, int iStep, int jStep) {

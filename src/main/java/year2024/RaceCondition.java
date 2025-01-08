@@ -7,6 +7,9 @@ import java.time.Instant;
 import java.util.*;
 
 public class RaceCondition extends AoCDay {
+
+    public final int MIN_COST_SAVINGS = 100;
+
     public void solve() {
         timeMarkers[0] = Instant.now().toEpochMilli();
         char[][] grid = convertToCharGrid(readResourceFile(2024, 20, false, 0));
@@ -15,23 +18,20 @@ public class RaceCondition extends AoCDay {
         Pair<Map<Pair<Integer, Integer>, Integer>, Map<Pair<Integer, Integer>, Pair<Integer, Integer>>> searchOutput = aStarSearchReturningAllNodeCosts(grid, startPos, endPos);
         List<Pair<Integer, Integer>> optimalPath = getCellLocations(searchOutput.getRight(), endPos);
         timeMarkers[1] = Instant.now().toEpochMilli();
-        part1Answer = solvePartOne(searchOutput.getLeft(), optimalPath,2, 100);
+        part1Answer = countCheats(searchOutput.getLeft(), optimalPath,2);
         timeMarkers[2] = Instant.now().toEpochMilli();
-        part2Answer = solvePartOne(searchOutput.getLeft(), optimalPath,20, 100);
+        part2Answer = countCheats(searchOutput.getLeft(), optimalPath,20);
         timeMarkers[3] = Instant.now().toEpochMilli();
     }
 
-    private int solvePartOne(Map<Pair<Integer, Integer>, Integer> nodeCosts, List<Pair<Integer, Integer>> optimalPath, int cheatDistance, int minCostSavings) {
+    private int countCheats(Map<Pair<Integer, Integer>, Integer> nodeCosts, List<Pair<Integer, Integer>> optimalPath, int cheatDistance) {
         int count = 0;
         for (Pair<Integer, Integer> point : optimalPath) {
             for (int i = -cheatDistance; i <= cheatDistance; i++) {
-                for (int j = -cheatDistance; j <= cheatDistance; j++) {
+                for (int j = -(cheatDistance - Math.abs(i)); j <= cheatDistance - Math.abs(i); j++) {
                     Pair<Integer, Integer> newPoint = Pair.of(point.getLeft() + i, point.getRight() + j);
-                    if (getManhattanDistance(point, newPoint) <= cheatDistance && nodeCosts.containsKey(newPoint)) {
-                        int costDiff = nodeCosts.get(newPoint) - nodeCosts.get(point);
-                        if (costDiff >= getManhattanDistance(point, newPoint) + minCostSavings) {
-                            count++;
-                        }
+                    if (nodeCosts.containsKey(newPoint)) {
+                        if (nodeCosts.get(newPoint) - nodeCosts.get(point) >= getManhattanDistance(point, newPoint) + MIN_COST_SAVINGS) count++;
                     }
                 }
             }

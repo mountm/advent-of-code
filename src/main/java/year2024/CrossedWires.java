@@ -98,10 +98,9 @@ public class CrossedWires extends AoCDay {
             }
         }
         for (Triplet<String, String, String> assignment : assignments.get(SUM_XOR)) {
-            String presumptiveOutputWire = assignment.getValue2();
             // this should be an output bit
-            if (!presumptiveOutputWire.contains("z")) {
-                faultyElements.add(presumptiveOutputWire);
+            if (!assignment.getValue2().contains("z")) {
+                faultyElements.add(assignment.getValue2());
             }
         }
         for (Triplet<String, String, String> assignment : assignments.get(CARRY_AND)) {

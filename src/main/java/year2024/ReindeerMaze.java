@@ -61,13 +61,13 @@ public class ReindeerMaze extends AoCDay {
         return output;
     }
 
-    private int findShortestPath(Pair<Map<CellWithDirection, Integer>, Map<CellWithDirection, Set<CellWithDirection>>> dijkstraOutput, Pair<Integer, Integer> endPos) {
-        return dijkstraOutput.getLeft().entrySet().stream().filter(e -> e.getKey().getPosition().equals(endPos)).map(Map.Entry::getValue).min(Comparator.naturalOrder()).orElse(Integer.MAX_VALUE);
+    private int findShortestPath(Pair<Map<CellWithDirection, Integer>, Map<CellWithDirection, Set<CellWithDirection>>> aStarOutput, Pair<Integer, Integer> endPos) {
+        return aStarOutput.getLeft().entrySet().stream().filter(e -> e.getKey().getPosition().equals(endPos)).map(Map.Entry::getValue).min(Comparator.naturalOrder()).orElse(Integer.MAX_VALUE);
     }
 
-    private int solvePart2(int part1Answer, Pair<Map<CellWithDirection, Integer>, Map<CellWithDirection, Set<CellWithDirection>>> dijkstraOutput, Pair<Integer, Integer> endPos) {
-        CellWithDirection endingCell = Objects.requireNonNull(dijkstraOutput.getLeft().entrySet().stream().filter(e -> e.getKey().getPosition().equals(endPos) && e.getValue() == part1Answer).findFirst().orElse(null)).getKey();
-        return countCellLocations(dijkstraOutput.getRight(), endingCell);
+    private int solvePart2(int part1Answer, Pair<Map<CellWithDirection, Integer>, Map<CellWithDirection, Set<CellWithDirection>>> aStarOutput, Pair<Integer, Integer> endPos) {
+        CellWithDirection endingCell = Objects.requireNonNull(aStarOutput.getLeft().entrySet().stream().filter(e -> e.getKey().getPosition().equals(endPos) && e.getValue() == part1Answer).findFirst().orElse(null)).getKey();
+        return countCellLocations(aStarOutput.getRight(), endingCell);
     }
 
     private int countCellLocations(Map<CellWithDirection, Set<CellWithDirection>> map, CellWithDirection endingCell) {
