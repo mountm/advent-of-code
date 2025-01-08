@@ -2,7 +2,6 @@ package year2024;
 
 import base.AoCDay;
 import org.apache.commons.lang3.tuple.Pair;
-import org.ejml.simple.SimpleMatrix;
 import year2024.Day13.Machine;
 
 import java.time.Instant;
@@ -34,14 +33,15 @@ public class ClawContraption extends AoCDay {
     private long countTokens(List<Machine> machines) {
         long tokenCount = 0;
         for (Machine machine : machines) {
-            SimpleMatrix prizeVector = new SimpleMatrix(new double[] {machine.getPrize().getLeft(), machine.getPrize().getRight() });
-            SimpleMatrix newBasis = new SimpleMatrix(new double[][] {
-                    new double[] { machine.getaBtn().getLeft(), machine.getbBtn().getLeft()},
-                    new double[] { machine.getaBtn().getRight(), machine.getbBtn().getRight()}
-            }).invert();
-            SimpleMatrix newPrizeVector = newBasis.mult(prizeVector);
-            long aCount = Math.round(newPrizeVector.get(0));
-            long bCount = Math.round(newPrizeVector.get(1));
+            // aXInc*aCount + bXInc*bCount = prizeX
+            // aYInc*aCount + bYInc*bCount = prizeY
+            // Cramer's Rule
+            long aCount = Math.round(
+                    (double)(machine.getPrize().getLeft() * machine.getbBtn().getRight() - machine.getbBtn().getLeft() * machine.getPrize().getRight())
+                            / (machine.getaBtn().getLeft() * machine.getbBtn().getRight() - machine.getaBtn().getRight() * machine.getbBtn().getLeft()));
+            long bCount = Math.round(
+                    (double)(machine.getaBtn().getLeft() * machine.getPrize().getRight() - machine.getPrize().getLeft() * machine.getaBtn().getRight())
+                            / (machine.getaBtn().getLeft() * machine.getbBtn().getRight() - machine.getaBtn().getRight() * machine.getbBtn().getLeft()));
             if (Pair.of(machine.getaBtn().getLeft() * aCount + machine.getbBtn().getLeft() * bCount,
                     machine.getaBtn().getRight() * aCount + machine.getbBtn().getRight() * bCount).equals(machine.getPrize())) {
                 tokenCount += 3 * aCount + bCount;
