@@ -61,17 +61,17 @@ public class PrintQueue extends AoCDay {
     private int sumValidUpdates(List<List<Integer>> updates, Map<Integer, Set<Integer>> rules) {
         int sum = 0;
         for (List<Integer> update : updates) {
-            boolean didModify = false;
+            boolean isValid = true;
             for (int i = 1; i < update.size(); i++) {
                 int val = update.get(i);
                 Set<Integer> subset = new HashSet<>(update.subList(0, i));
                 subset.retainAll(rules.getOrDefault(val, Set.of()));
                 if (!subset.isEmpty()) {
-                    didModify = true;
+                    isValid = false;
                     break;
                 }
             }
-            if (!didModify) {
+            if (isValid) {
                 sum += (update.get(update.size() / 2));
             }
         }

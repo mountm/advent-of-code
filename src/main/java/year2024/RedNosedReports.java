@@ -29,7 +29,7 @@ public class RedNosedReports extends AoCDay {
 
     private int countSafeReports(Set<List<Integer>> reports, boolean canDelete) {
         int count = 0;
-        checkReport: for(List<Integer> report : reports) {
+        for(List<Integer> report : reports) {
             List<Integer> diffs = new ArrayList<>();
             for (int i = 0; i < report.size() - 1; i++) {
                 diffs.add(report.get(i+1) - report.get(i));
@@ -46,7 +46,7 @@ public class RedNosedReports extends AoCDay {
                     }
                     if (diffs.stream().allMatch(e -> (e >= 1 && e <= 3)) || diffs.stream().allMatch(e -> (e >= -3 && e<= -1))) {
                         count++;
-                        continue checkReport;
+                        break;
                     }
                 }
             }

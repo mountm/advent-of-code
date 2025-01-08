@@ -19,8 +19,8 @@ public class MullItOver extends AoCDay {
         timeMarkers[3] = Instant.now().toEpochMilli();
     }
 
-    private Object sumMultiplications(List<String> lines, boolean checkToggle) {
-        Pattern pattern = checkToggle ? Pattern.compile("don't\\(\\)|do\\(\\)|mul\\([0-9]{1,3},[0-9]{1,3}\\)") : Pattern.compile("mul\\([0-9]{1,3},[0-9]{1,3}\\)");
+    private int sumMultiplications(List<String> lines, boolean checkToggle) {
+        Pattern pattern = checkToggle ? Pattern.compile("don't\\(\\)|do\\(\\)|mul\\(\\d{1,3},\\d{1,3}\\)") : Pattern.compile("mul\\(\\d{1,3},\\d{1,3}\\)");
         boolean doMult = true;
         int total = 0;
         for (String line : lines) {

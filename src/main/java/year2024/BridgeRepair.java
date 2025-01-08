@@ -31,28 +31,18 @@ public class BridgeRepair extends AoCDay {
         long sum = 0;
         for (List<Long> equation : equations) {
             long desiredTotal = equation.remove(0);
-            if (canGetDesiredTotal(desiredTotal, equation, useConcat)) {
+            if (canGetDesiredTotal(desiredTotal, equation.get(0), equation.subList(1, equation.size()), useConcat)) {
                 sum += desiredTotal;
             }
         }
         return sum;
     }
 
-    private static boolean canGetDesiredTotal(long desiredTotal, List<Long> equation, boolean useConcat) {
-        if (equation.isEmpty()) return false;
-        if (equation.size() < 2) return equation.get(0) == desiredTotal;
-        if (desiredTotal < equation.get(0)) return false;
-        List<Long> addList = new ArrayList<>();
-        List<Long> mulList = new ArrayList<>();
-        List<Long> concatList = new ArrayList<>();
-        addList.add(equation.get(0) + equation.get(1));
-        mulList.add(equation.get(0) * equation.get(1));
-        if (useConcat) {
-            concatList.add(Long.parseLong(String.valueOf(equation.get(0)) + equation.get(1), 10));
-            concatList.addAll(equation.subList(2, equation.size()));
-        }
-        addList.addAll(equation.subList(2, equation.size()));
-        mulList.addAll(equation.subList(2, equation.size()));
-        return canGetDesiredTotal(desiredTotal, addList, useConcat) || canGetDesiredTotal(desiredTotal, mulList, useConcat) || canGetDesiredTotal(desiredTotal, concatList, useConcat);
+    private static boolean canGetDesiredTotal(long desiredTotal, long currentTotal, List<Long> remainingOperands, boolean useConcat) {
+        if (remainingOperands.isEmpty()) return desiredTotal == currentTotal;
+        if (desiredTotal < currentTotal) return false;
+        return canGetDesiredTotal(desiredTotal, currentTotal + remainingOperands.get(0), remainingOperands.subList(1, remainingOperands.size()), useConcat)
+                || canGetDesiredTotal(desiredTotal, currentTotal * remainingOperands.get(0), remainingOperands.subList(1, remainingOperands.size()), useConcat)
+                || (useConcat && canGetDesiredTotal(desiredTotal, Long.parseLong(String.valueOf(currentTotal) + remainingOperands.get(0)), remainingOperands.subList(1, remainingOperands.size()), true));
     }
 }

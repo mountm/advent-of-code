@@ -25,9 +25,9 @@ public class GuardGallivant extends AoCDay {
                 }
             }
         }
-        timeMarkers[1] = Instant.now().toEpochMilli();
         boolean[][] visited = new boolean[puzzle.length][puzzle.length];
         traceRoute(puzzle, visited, startY, startX, startDirection);
+        timeMarkers[1] = Instant.now().toEpochMilli();
         part1Answer = countVisitedTiles(visited);
         timeMarkers[2] = Instant.now().toEpochMilli();
         part2Answer = countLoopOptions(puzzle, startY, startX, startDirection, visited);
