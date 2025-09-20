@@ -163,6 +163,17 @@ public class AoCDay {
         sb.append("\n");
         System.out.println(sb);
     }
+    protected void printGrid(int[][] grid) {
+        StringBuffer sb = new StringBuffer("\n");
+        for (int[] characters : grid) {
+            for (int j = 0; j < grid[0].length; j++) {
+                sb.append(characters[j]);
+            }
+            sb.append("\n");
+        }
+        sb.append("\n");
+        System.out.println(sb);
+    }
 
 
     protected List<String> convertStringToList(String input, String regex) {

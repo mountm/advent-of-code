@@ -18,11 +18,6 @@ public class ChiefHistorian extends AoCYear {
     }
 
     @Override
-    public void runOneDay(int day) {
-        runOneDay(day, true);
-    }
-
-    @Override
     public void runOneDay(int day, boolean printStatements) {
         AoCDay aoCDay = AOC_DAYS[day - 1];
         aoCDay.run(printStatements);
