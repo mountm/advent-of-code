@@ -7,7 +7,7 @@ public class SnowProduction extends AoCYear {
     AoCDay[] AOC_DAYS = {
             new Trebuchet(), new CubeConundrum(), new GearRatios(), new Scratchcards(), new Fertilizer(),
             new WaitForIt(), new CamelCards(), new HauntedWasteland(), new MirageMaintenance(), new PipeMaze(),
-            new CosmicExpansion()
+            new CosmicExpansion(), new HotSprings()
     };
 
     public SnowProduction(int year) {
