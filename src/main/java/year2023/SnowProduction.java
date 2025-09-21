@@ -6,7 +6,7 @@ import base.AoCYear;
 public class SnowProduction extends AoCYear {
     AoCDay[] AOC_DAYS = {
             new Trebuchet(), new CubeConundrum(), new GearRatios(), new Scratchcards(), new Fertilizer(),
-            new WaitForIt()
+            new WaitForIt(), new CamelCards(), new HauntedWasteland()
     };
 
     public SnowProduction(int year) {

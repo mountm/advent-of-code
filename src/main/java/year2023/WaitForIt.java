@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class WaitForIt extends AoCDay {
 
@@ -32,8 +31,8 @@ public class WaitForIt extends AoCDay {
 
     private long countWinningCombos(Set<Pair<Long, Long>> races) {
         return races.stream().mapToLong(race ->
-                Math.round(Math.floor((race.getLeft() + Math.sqrt(race.getLeft() * race.getLeft() - 4 * race.getRight()))/2 - TINY_VALUE)
-                        - Math.ceil((race.getLeft() - Math.sqrt(race.getLeft() * race.getLeft() - 4 * race.getRight()))/2 + TINY_VALUE)) + 1
+                Math.round(Math.ceil((race.getLeft() + Math.sqrt(race.getLeft() * race.getLeft() - 4 * race.getRight()))/2 - 1)
+                        - Math.floor((race.getLeft() - Math.sqrt(race.getLeft() * race.getLeft() - 4 * race.getRight()))/2 + 1)) + 1
         ).reduce(1L, Math::multiplyExact);
     }
 
