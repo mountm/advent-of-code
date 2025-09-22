@@ -102,6 +102,19 @@ public class AoCDay {
         return grid;
     }
 
+    protected int[][] convertToIntGrid(List<String> lines) {
+        // all ints must be single digits
+        int[][] grid = new int[lines.size()][lines.get(0).length()];
+        int i = 0;
+        for (String line : lines) {
+            for (int j = 0; j < line.length(); j++) {
+                grid[i][j] = line.charAt(j) - '0';
+            }
+            i++;
+        }
+        return grid;
+    }
+
     protected Pair<Integer, Integer> findCharInGrid(char[][] grid, char element) {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
